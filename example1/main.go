@@ -38,8 +38,7 @@ func main() {
 		fmt.Printf("ERROR: %v\n", err)
 		panic(err)
 	}
-	namespace := "kube-system"
-	items, err := clientset.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
+	items, err := clientset.AppsV1().Deployments(metav1.NamespaceDefault).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 		os.Exit(1)
