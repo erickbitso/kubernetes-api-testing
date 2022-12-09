@@ -79,31 +79,24 @@ func main() {
 		panic(err)
 	}
 
-	var myVPC ec2.VPC
-
 	for _, vpc := range vpcList.Items {
-		for _, condition := range vpc.Status.Conditions {
-			fmt.Printf("%v: %v\n", condition.Type, condition.Status)
-		}
-		myVPC = vpc
+		err := wait.PollImmediate(3*time.Second, 10*time.Minute, func() (done bool, err error) {
 
-	}
-
-	// Using wait.For
-	err = wait.PollImmediate(3*time.Second, 10*time.Second, func() (done bool, err error) {
-
-		for _, condition := range myVPC.Status.Conditions {
-			if condition.Status != "True" {
-				return false, nil
+			for _, condition := range vpc.Status.Conditions {
+				if condition.Status != "True" {
+					return false, nil
+				}
 			}
+
+			return true, nil
+		})
+		if err != nil {
+			fmt.Printf("wait.PollImmediate error waiting for condition to be true: %v\n", err)
+
+			panic(err)
 		}
 
-		return true, nil
-	})
-	if err != nil {
-		fmt.Printf("Eror corriendo wait.Poll: %v\n", err)
-
-		panic(err)
 	}
+
 	fmt.Println("All Status=True")
 }
