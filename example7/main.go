@@ -78,8 +78,10 @@ func main() {
 	}
 
 	for _, vpc := range vpcList.Items {
-		fmt.Println(vpc)
 		fmt.Println(vpc.Status.Conditions)
+		for _, condition := range vpc.Status.Conditions {
+			fmt.Printf("%v: %v\n", condition.Type, condition.Status)
+		}
 	}
 
 }
