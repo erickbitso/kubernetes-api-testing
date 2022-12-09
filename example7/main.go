@@ -58,7 +58,7 @@ func main() {
 		Resource: "vpcs",
 	}
 
-	var vpcList ec2.AddressList
+	var vpcList ec2.VPCList
 
 	resp, err := dynClient.Resource(resourceScheme).List(ctx, v1.ListOptions{})
 
@@ -81,4 +81,5 @@ func main() {
 		fmt.Println(vpc)
 		fmt.Println(vpc.Status.Conditions)
 	}
+
 }
