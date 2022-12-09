@@ -59,10 +59,7 @@ func main() {
 		&ec2.NATGatewayList{},
 		&ec2.RouteTableList{},
 	}
-	//vpcs := &ec2.VPCList{}
-	//getObjectList(c, vpcs)
-	//subnets := &ec2.SubnetList{}
-	//getObjectList(c, subnets)
+
 	for _, obj := range objects {
 		x := obj.(client.ObjectList)
 		getObjectList(c, x)
