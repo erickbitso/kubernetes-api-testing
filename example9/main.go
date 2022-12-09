@@ -35,7 +35,7 @@ func main() {
 		panic(err)
 	}
 
-	// New scheme
+	// Load the provider-aws types into the scheme
 	s := runtime.NewScheme()
 	if err := apis.AddToScheme(s); err != nil {
 		fmt.Printf("ERROR: %v\n", err)
@@ -49,14 +49,35 @@ func main() {
 
 		panic(err)
 	}
-	vpcs := &ec2.VPCList{}
 
-	err = c.List(context.Background(), vpcs)
+	// Now we can use the client to issue lists
+
+	objects := []interface{}{
+		&ec2.VPCList{},
+		&ec2.SubnetList{},
+		&ec2.InternetGatewayList{},
+		&ec2.NATGatewayList{},
+		&ec2.RouteTableList{},
+	}
+	//vpcs := &ec2.VPCList{}
+	//getObjectList(c, vpcs)
+	//subnets := &ec2.SubnetList{}
+	//getObjectList(c, subnets)
+	for _, obj := range objects {
+		x := obj.(client.ObjectList)
+		getObjectList(c, x)
+	}
+}
+
+func getObjectList(client client.Client, list client.ObjectList) {
+	fmt.Println("check")
+	err := client.List(context.Background(), list)
 	if err != nil {
 		fmt.Printf("ERROR: %v\n", err)
 
 		panic(err)
 	}
-	fmt.Println(vpcs)
-	fmt.Println("All Status=True")
+	kind := list.GetObjectKind().GroupVersionKind().Kind
+	fmt.Printf("%s: %v\n", kind, list)
+
 }
