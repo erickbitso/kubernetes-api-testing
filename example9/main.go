@@ -123,20 +123,6 @@ func main() {
 	}
 }
 
-func getObjectList(client client.Client, list client.ObjectList) {
-	fmt.Println("check")
-	err := client.List(context.Background(), list)
-	if err != nil {
-		fmt.Printf("ERROR: %v\n", err)
-
-		panic(err)
-	}
-
-	kind := list.GetObjectKind().GroupVersionKind().Kind
-	fmt.Printf("%s: %v\n", kind, list)
-
-}
-
 func verifyObjectList(client client.Client, list client.ObjectList) {
 	err := client.List(context.Background(), list)
 	if err != nil {
@@ -150,12 +136,42 @@ func verifyObjectList(client client.Client, list client.ObjectList) {
 	case *ec2.VPCList:
 		fmt.Println("VPC: ")
 		for _, item := range v.Items {
-			fmt.Println(item)
+			err := wait.PollImmediate(3*time.Second, 10*time.Minute, func() (done bool, err error) {
+
+				for _, condition := range item.Status.Conditions {
+					if condition.Status != "True" {
+						return false, nil
+					}
+				}
+				fmt.Println("Status=True")
+				return true, nil
+			})
+			if err != nil {
+				fmt.Printf("wait.PollImmediate error waiting for condition to be true: %v\n", err)
+
+				panic(err)
+			}
+
 		}
 	case *ec2.SubnetList:
 		fmt.Println("Subnets: ")
 		for _, item := range v.Items {
-			fmt.Println(item)
+			err := wait.PollImmediate(3*time.Second, 10*time.Minute, func() (done bool, err error) {
+
+				for _, condition := range item.Status.Conditions {
+					if condition.Status != "True" {
+						return false, nil
+					}
+				}
+				fmt.Println("Status=True")
+				return true, nil
+			})
+			if err != nil {
+				fmt.Printf("wait.PollImmediate error waiting for condition to be true: %v\n", err)
+
+				panic(err)
+			}
+
 		}
 	default:
 		fmt.Println("not valid")
