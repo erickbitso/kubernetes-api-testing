@@ -77,41 +77,55 @@ func verifyObjectList(client client.Client, list client.ObjectList) {
 		panic(err)
 	}
 
-	var itemStatus []xpv1.ResourceStatus
+	type Item struct {
+		Name   string
+		Status xpv1.ResourceStatus
+	}
+
+	var itemStatus []Item
 
 	switch v := list.(type) {
 
 	case *ec2.VPCList:
 		for _, item := range v.Items {
-			itemStatus = append(itemStatus, item.Status.ResourceStatus)
+			my := Item{Name: item.Name, Status: item.Status.ResourceStatus}
+			itemStatus = append(itemStatus, my)
 		}
 	case *ec2.SubnetList:
 		for _, item := range v.Items {
-			itemStatus = append(itemStatus, item.Status.ResourceStatus)
+			my := Item{Name: item.Name, Status: item.Status.ResourceStatus}
+			itemStatus = append(itemStatus, my)
 		}
 	case *ec2.NATGatewayList:
 		for _, item := range v.Items {
-			itemStatus = append(itemStatus, item.Status.ResourceStatus)
+			my := Item{Name: item.Name, Status: item.Status.ResourceStatus}
+			itemStatus = append(itemStatus, my)
 		}
 	case *ec2.AddressList:
 		for _, item := range v.Items {
-			itemStatus = append(itemStatus, item.Status.ResourceStatus)
+			my := Item{Name: item.Name, Status: item.Status.ResourceStatus}
+			itemStatus = append(itemStatus, my)
 		}
 	case *ec2.InternetGatewayList:
 		for _, item := range v.Items {
-			itemStatus = append(itemStatus, item.Status.ResourceStatus)
+			my := Item{Name: item.Name, Status: item.Status.ResourceStatus}
+			itemStatus = append(itemStatus, my)
 		}
 	case *ec2.RouteTableList:
 		for _, item := range v.Items {
-			itemStatus = append(itemStatus, item.Status.ResourceStatus)
+			my := Item{Name: item.Name, Status: item.Status.ResourceStatus}
+			itemStatus = append(itemStatus, my)
 		}
 	default:
 		fmt.Println("not valid")
 	}
 
 	for _, roco := range itemStatus {
-		_, err := resourceStatus(roco)
-		processError(err)
+		_, err := resourceStatus(roco.Status)
+		if err != nil {
+			fmt.Printf("Error: %s %v\n", roco.Name, err)
+
+		}
 	}
 
 }
@@ -132,11 +146,4 @@ func resourceStatus(item xpv1.ResourceStatus) (bool, error) {
 		return false, err
 	}
 	return true, nil
-}
-
-func processError(err error) {
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-
-	}
 }
