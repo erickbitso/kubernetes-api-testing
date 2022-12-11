@@ -65,7 +65,6 @@ func main() {
 
 	for _, obj := range objects {
 		verifyObjectList(c, obj)
-		//getObjectList(c, obj)
 	}
 
 }
@@ -78,48 +77,41 @@ func verifyObjectList(client client.Client, list client.ObjectList) {
 		panic(err)
 	}
 
-	//x := list.(*ec2.VPCList)
+	var itemStatus []xpv1.ResourceStatus
+
 	switch v := list.(type) {
+
 	case *ec2.VPCList:
-		fmt.Println("VPC: ")
 		for _, item := range v.Items {
-			_, err := resourceStatus(item.Status.ResourceStatus)
-			processError(err)
-
+			itemStatus = append(itemStatus, item.Status.ResourceStatus)
 		}
-
 	case *ec2.SubnetList:
-		fmt.Println("Subnets: ")
 		for _, item := range v.Items {
-			_, err := resourceStatus(item.Status.ResourceStatus)
-			processError(err)
+			itemStatus = append(itemStatus, item.Status.ResourceStatus)
 		}
 	case *ec2.NATGatewayList:
-		fmt.Println("NAT Gateways: ")
 		for _, item := range v.Items {
-			_, err := resourceStatus(item.Status.ResourceStatus)
-			processError(err)
+			itemStatus = append(itemStatus, item.Status.ResourceStatus)
 		}
 	case *ec2.AddressList:
-		fmt.Println("Elastic IPs: ")
 		for _, item := range v.Items {
-			_, err := resourceStatus(item.Status.ResourceStatus)
-			processError(err)
+			itemStatus = append(itemStatus, item.Status.ResourceStatus)
 		}
 	case *ec2.InternetGatewayList:
-		fmt.Println("Internet Gateways: ")
 		for _, item := range v.Items {
-			_, err := resourceStatus(item.Status.ResourceStatus)
-			processError(err)
+			itemStatus = append(itemStatus, item.Status.ResourceStatus)
 		}
 	case *ec2.RouteTableList:
-		fmt.Println("Route Tables: ")
 		for _, item := range v.Items {
-			_, err := resourceStatus(item.Status.ResourceStatus)
-			processError(err)
+			itemStatus = append(itemStatus, item.Status.ResourceStatus)
 		}
 	default:
 		fmt.Println("not valid")
+	}
+
+	for _, roco := range itemStatus {
+		_, err := resourceStatus(roco)
+		processError(err)
 	}
 
 }
@@ -136,7 +128,6 @@ func resourceStatus(item xpv1.ResourceStatus) (bool, error) {
 		return true, nil
 	})
 	if err != nil {
-		fmt.Printf("wait.PollImmediate error waiting for condition to be true: %v\n", err)
 
 		return false, err
 	}
@@ -147,6 +138,5 @@ func processError(err error) {
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 
-		panic(err)
 	}
 }
