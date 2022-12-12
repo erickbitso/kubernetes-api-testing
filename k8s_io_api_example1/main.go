@@ -20,5 +20,5 @@ func main() {
 		},
 	}
 
-	fmt.Println(deployment.String())
+	fmt.Printf("%v", &deployment)
 }
