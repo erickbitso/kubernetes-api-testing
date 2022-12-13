@@ -1,7 +1,3 @@
+# Kubernetes-api-testing
 
-
-Examples:
-  - example1: Basic client-go
-  - example2: Dynamic client example
-  - example3: Dynamic client and XRDs
-
+A number of code examples showcasing Kubernetes API testing and the e2e-framework.
